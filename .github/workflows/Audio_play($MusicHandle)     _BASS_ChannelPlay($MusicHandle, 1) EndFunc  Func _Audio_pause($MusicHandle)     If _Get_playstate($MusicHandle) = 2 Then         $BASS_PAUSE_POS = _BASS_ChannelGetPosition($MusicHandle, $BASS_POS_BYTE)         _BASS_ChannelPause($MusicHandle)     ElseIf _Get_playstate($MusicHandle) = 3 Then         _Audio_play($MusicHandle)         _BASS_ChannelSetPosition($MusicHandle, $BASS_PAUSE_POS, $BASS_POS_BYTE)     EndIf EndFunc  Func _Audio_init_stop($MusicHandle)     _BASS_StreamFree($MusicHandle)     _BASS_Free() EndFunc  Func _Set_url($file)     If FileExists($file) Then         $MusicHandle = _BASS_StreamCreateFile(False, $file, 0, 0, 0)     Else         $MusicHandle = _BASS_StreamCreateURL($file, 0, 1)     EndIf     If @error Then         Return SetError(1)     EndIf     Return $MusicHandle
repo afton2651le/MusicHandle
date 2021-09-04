@@ -1,0 +1,29 @@
+Audio_play($MusicHandle)
+    _BASS_ChannelPlay($MusicHandle, 1)
+EndFunc
+
+Func _Audio_pause($MusicHandle)
+    If _Get_playstate($MusicHandle) = 2 Then
+        $BASS_PAUSE_POS = _BASS_ChannelGetPosition($MusicHandle, $BASS_POS_BYTE)
+        _BASS_ChannelPause($MusicHandle)
+    ElseIf _Get_playstate($MusicHandle) = 3 Then
+        _Audio_play($MusicHandle)
+        _BASS_ChannelSetPosition($MusicHandle, $BASS_PAUSE_POS, $BASS_POS_BYTE)
+    EndIf
+EndFunc
+
+Func _Audio_init_stop($MusicHandle)
+    _BASS_StreamFree($MusicHandle)
+    _BASS_Free()
+EndFunc
+
+Func _Set_url($file)
+    If FileExists($file) Then
+        $MusicHandle = _BASS_StreamCreateFile(False, $file, 0, 0, 0)
+    Else
+        $MusicHandle = _BASS_StreamCreateURL($file, 0, 1)
+    EndIf
+    If @error Then
+        Return SetError(1)
+    EndIf
+    Return $MusicHandle
